@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple-Style Messages</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=SF+Pro+Text:wght@400;500;600&display=swap">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'apple-blue': '#0a84ff',
+                        'apple-green': '#30d158',
+                        'apple-gray': '#f5f5f7',
+                        'apple-sidebar': '#f9f9f9',
+                        'apple-message-blue': '#007aff',
+                        'apple-message-green': '#34c759',
+                        'apple-message-gray': '#e9e9eb',
+                    },
+                    borderRadius: {
+                        'message': '1.25rem',
+                    }
+                },
+                fontFamily: {
+                    sans: ['"SF Pro Text"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                    display: ['"SF Pro Display"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .imessage-blue {
+            background: linear-gradient(to bottom right, #1d86ff, #0870e9);
+        }
+        
+        .imessage-green {
+            background: linear-gradient(to bottom right, #36d05c, #2cc155);
+        }
+
+        /* Custom scrollbar for apple-style */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* Message bubble tails */
+        .message-sent:not(.no-tail)::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: -8px;
+            width: 16px;
+            height: 16px;
+            background-color: white;
+            border-bottom-left-radius: 16px;
+            z-index: 0;
+        }
+        
+        .message-sent:not(.no-tail)::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: -10px;
+            width: 20px;
+            height: 25px;
+            background-color: white;
+            border-bottom-left-radius: 16px;
+            z-index: 1;
+            clip-path: path('M 0 25 Q 16 25 20 0 L 0 0 L 0 25');
+        }
+        
+        .imessage-blue.message-sent:not(.no-tail)::after {
+            background: linear-gradient(to bottom right, #1d86ff, #0870e9);
+        }
+        
+        .imessage-blue.message-sent:not(.no-tail)::before {
+            background-color: white;
+            clip-path: path('M 0 25 Q 16 25 20 0 L 0 0 L 0 25');
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4 flex justify-center items-center min-h-screen">
+        <div class="w-full max-w-6xl bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Mac window chrome -->
+            <div class="bg-gray-200 px-4 py-2 border-b border-gray-300 flex items-center space-x-4">
+                <div class="flex space-x-2">
+                    <div class="w-3 h-3 rounded-full bg-red-500 border border-red-700"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-400 border border-yellow-600"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500 border border-green-700"></div>
+                </div>
+                <div class="mx-auto bg-white rounded-md px-3 py-1 text-sm text-gray-600 flex items-center shadow-sm">
+                    <svg class="w-4 h-4 text-apple-message-blue mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Messages
+                </div>
+            </div>
+
+            <!-- Main chat interface -->
+            <div class="flex h-[650px]">
+                <!-- Left sidebar - Contacts -->
+                <div class="w-72 bg-apple-sidebar border-r border-gray-200 flex flex-col">
+                    <!-- Search bar -->
+                    <div class="p-3 border-b border-gray-200">
+                        <div class="relative">
+                            <input 
+                                type="text" 
+                                placeholder="Search" 
+                                class="w-full rounded-lg pl-9 py-2 bg-gray-200 border-none focus:ring-0 focus:bg-white text-sm"
+                            />
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Messages title and compose button -->
+                    <div class="flex justify-between items-center p-3">
+                        <h2 class="font-medium text-lg">Messages</h2>
+                        <button class="w-7 h-7 rounded-full bg-apple-message-blue flex items-center justify-center text-white">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Contact list -->
+                    <div class="flex-1 overflow-y-auto">
+                        <!-- Contact 1 - Active -->
+                        <div class="px-3 py-2 flex hover:bg-blue-50 cursor-pointer bg-blue-100 border-l-4 border-apple-message-blue">
+                            <div class="flex-shrink-0 mr-3">
+                                <img class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Jake+Leichtling&background=4F46E5&color=fff" alt="Jake Leichtling">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-semibold text-gray-900 truncate">Jake Leichtling</h3>
+                                    <span class="text-xs text-gray-500">10:34 AM</span>
+                                </div>
+                                <p class="text-sm text-gray-500 truncate">See you soon</p>
+                            </div>
+                        </div>
+
+                        <!-- Contact 2 -->
+                        <div class="px-3 py-2 flex hover:bg-gray-50 cursor-pointer">
+                            <div class="flex-shrink-0 mr-3">
+                                <img class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Amanda+McNary&background=FF5733&color=fff" alt="Amanda McNary">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-semibold text-gray-900 truncate">Amanda McNary</h3>
+                                    <span class="text-xs text-gray-500">2 min</span>
+                                </div>
+                                <p class="text-sm text-gray-500 truncate">No problem! 😊</p>
+                            </div>
+                        </div>
+
+                        <!-- Contact 3 - Phone number -->
+                        <div class="px-3 py-2 flex hover:bg-gray-50 cursor-pointer">
+                            <div class="flex-shrink-0 mr-3">
+                                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-medium">
+                                    +1
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-semibold text-gray-900 truncate">(650) 695-8875</h3>
+                                    <span class="text-xs text-gray-500">12:44 PM</span>
+                                </div>
+                                <p class="text-sm text-gray-500 truncate">Thank you. I'm heading home now</p>
+                            </div>
+                        </div>
+
+                        <!-- Contact 4 -->
+                        <div class="px-3 py-2 flex hover:bg-gray-50 cursor-pointer">
+                            <div class="flex-shrink-0 mr-3">
+                                <img class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Scott+Fleener&background=22C55E&color=fff" alt="Scott Fleener">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-semibold text-gray-900 truncate">Scott Fleener</h3>
+                                    <span class="text-xs text-gray-500">Wed</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="h-2 w-2 bg-apple-message-blue rounded-full mr-1.5"></span>
+                                    <p class="text-sm text-gray-800 truncate">We are heading to San Francisco</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Group conversation -->
+                        <div class="px-3 py-2 flex hover:bg-gray-50 cursor-pointer">
+                            <div class="flex-shrink-0 mr-3">
+                                <div class="relative">
+                                    <div class="flex -space-x-2 h-10">
+                                        <img class="h-8 w-8 rounded-full ring-2 ring-white" src="https://ui-avatars.com/api/?name=Ray&background=8B5CF6&color=fff" alt="Ray">
+                                        <img class="h-8 w-8 rounded-full ring-2 ring-white" src="https://ui-avatars.com/api/?name=Jason&background=10B981&color=fff" alt="Jason">
+                                        <div class="h-8 w-8 rounded-full bg-gray-300 ring-2 ring-white flex items-center justify-center text-xs font-medium text-gray-800">
+                                            +2
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-semibold text-gray-900 truncate">Trip Planning</h3>
+                                    <span class="text-xs text-gray-500">Tue</span>
+                                </div>
+                                <p class="text-sm text-gray-500 truncate">Ray: Let me know next time</p>
+                            </div>
+                        </div>
+
+                        <!-- Birthday Party Planning Group -->
+                        <div class="px-3 py-2 flex hover:bg-gray-50 cursor-pointer">
+                            <div class="flex-shrink-0 mr-3">
+                                <div class="relative flex -space-x-1 overflow-hidden p-1">
+                                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://ui-avatars.com/api/?name=Jeremy&background=EF4444&color=fff" alt="Jeremy">
+                                    <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://ui-avatars.com/api/?name=Jacinta&background=8B5CF6&color=fff" alt="Jacinta">
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-semibold text-gray-900 truncate">Birthday Party Planning</h3>
+                                    <span class="text-xs text-gray-500">Feb 6</span>
+                                </div>
+                                <p class="text-sm text-gray-500 truncate">Jacinta: That is amazing, Jeremy</p>
+                            </div>
+                        </div>
+
+                        <!-- Contact with phone number -->
+                        <div class="px-3 py-2 flex hover:bg-gray-50 cursor-pointer">
+                            <div class="flex-shrink-0 mr-3">
+                                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-medium">
+                                    #
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-semibold text-gray-900 truncate">(519) 729-5335</h3>
+                                    <span class="text-xs text-gray-500">Feb 5</span>
+                                </div>
+                                <p class="text-sm text-gray-500 truncate">Yes, I will contact her tomorrow :)</p>
+                            </div>
+                        </div>
+
+                        <!-- More contacts -->
+                        <div class="px-3 py-2 flex hover:bg-gray-50 cursor-pointer">
+                            <div class="flex-shrink-0 mr-3">
+                                <img class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Peter+Paik&background=F97316&color=fff" alt="Peter Paik">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-semibold text-gray-900 truncate">Peter Paik</h3>
+                                    <span class="text-xs text-gray-500">Jan 20</span>
+                                </div>
+                                <p class="text-sm text-gray-500 truncate">I am available tomorrow at 7PM</p>
+                            </div>
+                        </div>
+
+                        <!-- Security code -->
+                        <div class="px-3 py-2 flex hover:bg-gray-50 cursor-pointer">
+                            <div class="flex-shrink-0 mr-3">
+                                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-medium text-xs">
+                                    333
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-semibold text-gray-900 truncate">333-33</h3>
+                                    <span class="text-xs text-gray-500">Jan 19</span>
+                                </div>
+                                <p class="text-sm text-gray-500 truncate">Your security code is: 02103</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right side - Chat content -->
+                <div class="flex-1 flex flex-col">
+                    <!-- Chat header -->
+                    <div class="bg-white border-b border-gray-200 p-3 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <img class="h-8 w-8 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Jake+Leichtling&background=4F46E5&color=fff" alt="Jake Leichtling">
+                            <h2 class="font-semibold text-lg">Jake Leichtling</h2>
+                        </div>
+                        <div class="flex space-x-4 text-gray-500">
+                            <button class="hover:text-gray-700">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <button class="hover:text-gray-700">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <button class="hover:text-gray-700">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Chat messages -->
+                    <div class="flex-1 overflow-y-auto p-4 bg-white space-y-4">
+                        <!-- Conversation timestamp -->
+                        <div class="flex justify-center">
+                            <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                Friday, May 9 • 10:15 AM
+                            </span>
+                        </div>
+
+                        <!-- Message from Jake -->
+                        <div class="flex items-end space-x-2 mb-4">
+                            <div class="flex-shrink-0">
+                                <img class="h-8 w-8 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Jake+Leichtling&background=4F46E5&color=fff" alt="Jake Leichtling">
+                            </div>
+                            <div class="max-w-xs sm:max-w-md">
+                                <div class="bg-apple-message-gray rounded-message rounded-bl-none px-4 py-2 relative">
+                                    <p class="text-gray-900">Can't wait to catch up</p>
+                                </div>
+                                <span class="text-xs text-gray-500 ml-2 mt-1">10:16 AM</span>
+                            </div>
+                        </div>
+
+                        <!-- Message from you -->
+                        <div class="flex flex-row-reverse items-end space-x-2 space-x-reverse mb-1">
+                            <div class="max-w-xs sm:max-w-md">
+                                <div class="imessage-blue text-white rounded-message rounded-br-none px-4 py-2 relative message-sent">
+                                    <p>I can't wait for the party tonight</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Message from you -->
+                        <div class="flex flex-row-reverse items-end space-x-2 space-x-reverse mb-1">
+                            <div class="max-w-xs sm:max-w-md">
+                                <div class="imessage-blue text-white rounded-message rounded-br-none px-4 py-2 relative message-sent">
+                                    <p>So excited! 🥳</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Message with sticker from you -->
+                        <div class="flex flex-row-reverse items-end mb-1">
+                            <div class="max-w-xs p-1">
+                                <img src="https://i.pinimg.com/originals/4e/b4/e6/4eb4e6f6de28f7f7ac529c517dfa1ee6.gif" alt="Party sticker" class="h-32 w-32 object-contain">
+                            </div>
+                        </div>
+
+                        <!-- "Me too" reply -->
+                        <div class="flex flex-row-reverse items-end space-x-2 space-x-reverse mb-1">
+                            <div class="max-w-xs sm:max-w-md">
+                                <div class="imessage-blue text-white rounded-message rounded-br-none px-4 py-2 relative message-sent">
+                                    <p>Me too!</p>
+                                </div>
+                                <span class="text-xs text-gray-500 mr-2 mt-1 text-right block">Delivered</span>
+                            </div>
+                        </div>
+
+                        <!-- Message from Jake -->
+                        <div class="flex items-end space-x-2 mb-4">
+                            <div class="flex-shrink-0">
+                                <img class="h-8 w-8 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Jake+Leichtling&background=4F46E5&color=fff" alt="Jake Leichtling">
+                            </div>
+                            <div class="max-w-xs sm:max-w-md">
+                                <div class="bg-apple-message-gray rounded-message rounded-bl-none px-4 py-2 relative">
+                                    <p class="text-gray-900">See you soon</p>
+                                </div>
+                                <span class="text-xs text-gray-500 ml-2 mt-1">10:34 AM • Read</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Typing indicator -->
+                        <div class="flex items-end space-x-2">
+                            <div class="flex-shrink-0">
+                                <img class="h-8 w-8 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Jake+Leichtling&background=4F46E5&color=fff" alt="Jake Leichtling">
+                            </div>
+                            <div class="bg-apple-message-gray rounded-message rounded-bl-none px-4 py-2 w-16">
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-gray-500 rounded-full animate-pulse"></div>
+                                    <div class="w-2 h-2 bg-gray-500 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+                                    <div class="w-2 h-2 bg-gray-500 rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message effects panel -->
+                    <div class="px-4 py-2 bg-gray-50 border-t border-gray-200">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex space-x-6">
+                                <button class="text-gray-500 hover:text-gray-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </button>
+                                <button class="text-gray-500 hover:text-gray-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="flex-1">
+                                <div class="relative">
+                                    <textarea 
+                                        placeholder="iMessage" 
+                                        rows="1" 
+                                        class="w-full rounded-2xl pl-4 pr-10 py-3 resize-none border border-gray-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                    ></textarea>
+                                    <button class="absolute right-3 bottom-3 text-apple-message-blue">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- App integrations bar -->
+                    <div class="flex items-center justify-between px-4 py-2 bg-white border-t border-gray-200 overflow-x-auto">
+                        <div class="flex space-x-5">
+                            <button class="flex flex-col items-center justify-center">
+                                <div class="h-6 w-6 text-apple-message-blue">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <span class="text-xs text-gray-600">Photos</span>
+                            </button>
+                            <button class="flex flex-col items-center justify-center">
+                                <div class="h-6 w-6 text-red-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                                    </svg>
+                                </div>
+                                <span class="text-xs text-gray-600">FaceTime</span>
+                            </button>
+                            <button class="flex flex-col items-center justify-center">
+                                <div class="h-6 w-6 text-green-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                                    </svg>
+                                </div>
+                                <span class="text-xs text-gray-600">Call</span>
+                            </button>
+                            <button class="flex flex-col items-center justify-center">
+                                <div class="h-6 w-6 text-yellow-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                </div>
+                                <span class="text-xs text-gray-600">Memoji</span>
+                            </button>
+                            <button class="flex flex-col items-center justify-center">
+                                <div class="h-6 w-6 text-purple-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z" />
+                                    </svg>
+                                </div>
+                                <span class="text-xs text-gray-600">Music</span>
+                            </button>
+                        </div>
+                        <button class="text-gray-500 hover:text-gray-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
